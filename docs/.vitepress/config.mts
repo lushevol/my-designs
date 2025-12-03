@@ -8,23 +8,16 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
-      { text: 'Examples', link: '/markdown-examples' },
       { text: 'Code Review Agent', link: '/designs/code-review-agent' }
     ],
 
     sidebar: [
       {
-        text: 'Examples',
-        items: [
-          { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' }
-        ]
-      },
-      {
         text: 'Designs',
         items: [
           { text: 'Code Review Agent', link: '/designs/code-review-agent' },
-          { text: "Workflow", link: '/designs/code-review-agent/workflow' }
+          { text: "Workflow", link: '/designs/code-review-agent/workflow' },
+          { text: "FAQ", link: '/designs/code-review-agent/faq' }
         ]
       }
     ],

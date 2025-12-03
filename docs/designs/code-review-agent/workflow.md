@@ -1,6 +1,6 @@
-# System Design Document: Workflow Engine (Self-Hosted Poller Edition)
+# System Design Document: Workflow Engine
 
-### Component of Intelligent Code Review Agent v2
+### Component of Ratan Code Review Agent
 
 ## 1. Executive Summary
 
@@ -67,7 +67,7 @@ This is where the concurrency limit is enforced to protect resources and API rat
 
 ## 4. The Review Workflow (File-by-File Strategy)
 
-Since we are not processing the whole diff at once, the workflow iterates through the files.
+The workflow iterates through the files.
 
 ### Step 1: Context & Preparation
 
@@ -84,7 +84,7 @@ The engine loops through every changed file in the PR.
 **For Each File:**
 
 1.  **Fetch Content:** Get the specific diff chunks for this file.
-2.  **Redaction:** Run regex over the file content to mask secrets (PII/Creds).
+2.  **Redaction:** Run redact processor over the file content to mask secrets (PII/Creds).
 3.  **AI Analysis (Review Agent):**
       * *Prompt Context:* "You are reviewing `UserController.ts`. Identify bugs and security risks."
       * *Input:* The specific file diff.
@@ -110,43 +110,9 @@ Once all files are processed:
 
 -----
 
-## 5. Data Structures
-
-### The Job Object (In-Memory)
-
-This object passes through your queues.
-
-```typescript
-interface ReviewJob {
-  repoId: string;
-  prId: number;
-  commitHash: string; // The specific commit we are targeting
-  status: 'QUEUED' | 'WAITING_FOR_BUILD' | 'PROCESSING' | 'COMPLETED';
-  retryCount: number;
-  context: {
-    projectKey?: string; // For SonarQube
-    reviewConfig?: ReviewConfig; // Loaded from repo
-  }
-}
-```
-
------
-
-## 6. Handling Edge Cases (Self-Hosted Specifics)
+## 5. Handling Edge Cases
 
 | Scenario | System Behavior |
 | :--- | :--- |
 | **Process Crash / Restart** | Since queues are in-memory, pending jobs are lost. **Recovery:** On startup, the Scanner will re-scan repos. Since it checks "Latest Commit vs. Bot Comment," it will simply pick up where it left off (re-queueing unreviewed PRs). |
 | **New Commit while Reviewing** | If a developer pushes a new commit *while* the bot is reviewing the old one: The bot finishes the current review. The next "Scanner" tick detects the new commit and queues a *new* job. |
-| **Rate Limits (ADO/OpenAI)** | If the worker hits a 429, the specific `ReviewJob` is paused and pushed back to the tail of the queue with a `retryAfter` timestamp. |
-
------
-
-### Updates based on your feedback:
-
-1.  **Removed Azure Dependencies:** No Service Bus or Functions. Pure Node.js app logic.
-2.  **Added "Build Watcher":** Explicit state to handle the "Wait for Build" requirement.
-3.  **Concurrency:** Explicit `Worker Pool` limit mentioned.
-4.  **File-by-File:** The logic in Section 4 is now explicitly iterative per file.
-
-Since you are using Node.js/NestJS for this "Program," would you like me to provide a **pseudo-code structure for the `PollingService` and `QueueManager`** using a library like `RxJS` or `BullMQ` to visualize how to handle the concurrency?

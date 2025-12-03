@@ -1,10 +1,10 @@
-# Architecture Design Document: Intelligent Code Review Agent v2 (Enterprise Edition)
+# Architecture Design Document: Ratan Code Review Agent
 
 ![brand](/assets/branding.png)
 
 ## 1. Introduction
 
-This document outlines the architecture for the **Intelligent Code Review Agent (Enterprise Edition)**, a resilient, event-driven platform designed to automate and augment peer reviews within our Azure DevOps environment.
+This document outlines the architecture for the **Intelligent Code Review Agent**, a resilient, event-driven platform designed to automate and augment peer reviews within our Azure DevOps environment.
 
 **Purpose**
 In a highly regulated financial sector, balancing engineering velocity with strict compliance and security standards is critical. The primary purpose of this system is to alleviate the bottleneck of manual code reviews by providing an instantaneous, automated first-pass review. Unlike basic AI scripts, this architecture uses a specialized multi-agent cognitive chain to understand context, identify security risks, categorize issues, and generate comprehensive reports, ensuring that human reviewers focus only on complex architectural decisions.
